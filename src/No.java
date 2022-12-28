@@ -1,41 +1,41 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-
 public class No {
-    private Object elemento;
+    private Object chave;
+
     private No pai;
-    private ArrayList <Object> filhos = new ArrayList<>();
 
-    public No(No pai, Object elemento){
+    private No filhoEsquerdo;
+
+    private No filhoDireito;
+
+
+    public No(Object newChave) {
+        this.chave = newChave;
+    }
+
+    public void setPai(No pai) {
         this.pai = pai;
-        this.elemento = elemento;
     }
-
-    public Object getElemento(){
-        return elemento;
-    }
-    public void setElemento(Object elemento) {
-        this.elemento = elemento;
-    }
-
-    public No paiDeUmNo(){
+    public No getPai(){
         return pai;
     }
 
-    public void addFilho(No elemento){
-        filhos.add(elemento);
+    public Object getChave(){
+        return chave;
+    }
+    public void setChave(Object chave) {
+        this.chave = chave;
     }
 
-    public void removeFilho(No elemento){
-        filhos.remove(elemento);
+    public void setFilhoEsquerdo(No filhoEsquerdo){
+        this.filhoEsquerdo = filhoEsquerdo;
     }
 
-    public int numeroFilhos(){
-        return filhos.size();
+    public No getFilhoEsquerdo(){
+        return filhoEsquerdo;
     }
 
-    public Iterator<Object> filhosDeUmNo(){
-        return filhos.iterator();
+    public No getFilhoDireito(){
+        return filhoDireito;
     }
 
 }
