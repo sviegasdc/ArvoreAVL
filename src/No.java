@@ -34,6 +34,10 @@ public class No {
         return filhoEsquerdo;
     }
 
+    public void setFilhoDireito(No filhoDireito){
+        this.filhoDireito = filhoDireito;
+    }
+
     public No getFilhoDireito(){
         return filhoDireito;
     }
