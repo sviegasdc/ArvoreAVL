@@ -31,9 +31,9 @@ public class ArvoreBinariaPesquisa {
 
         public int compareChaves (Object chave1, Object chave2){
         return comparadorDechaves.compare(chave1, chave2);
-        // Se a primeira chave é menor que a segunda, o método retorna um número negativo,"-1"
-        // Se a primeira chave é igual à segunda, o método retorna "0"
-        // Se a primeira chave é maior que a segunda, o método retorna um número positivo,"1"
+        // se a primeira chave é menor que a segunda, o método retorna um número negativo,"-1"
+        // se a primeira chave é igual à segunda, o método retorna "0"
+        // se a primeira chave é maior que a segunda, o método retorna um número positivo,"1"
     }
 
 
@@ -58,10 +58,7 @@ public class ArvoreBinariaPesquisa {
 
     public void listaArvore(No node) {
         ArrayNos.add(node);
-        if (ehInterno(node)) {
-            listaArvore(node.getFilhoEsquerdo());
-            listaArvore(node.getFilhoDireito());
-        }
+        System.out.println(ArrayNos);
     }
 
     public void emOrdem(No node){
@@ -101,7 +98,7 @@ public class ArvoreBinariaPesquisa {
     }
 
     public int altura(No node) {
-        if(ehExterno(node)){
+        if(node == getRaiz()){
             return 0;
         }
         int alturaEsquerda = altura(node.getFilhoEsquerdo());
@@ -109,20 +106,6 @@ public class ArvoreBinariaPesquisa {
         return Math.max(alturaEsquerda, alturaDireita);
     }
 
-    public void mostrarElementos(){
-        for (No node:ArrayNos) {
-            // para cada nó no array,imprima
-            System.out.println(node.getChave());
-        }
-    }
-
-    public void mostrarNos(){
-        // for each
-        for (No node:ArrayNos) {
-            // para cada nó no array,imprima
-            System.out.println(node);
-        }
-    }
 
     public boolean ehExterno(No node){
         // para ser externo/folha ele não pode ter nenhum filho
@@ -136,9 +119,57 @@ public class ArvoreBinariaPesquisa {
         return checagem;
     }
 
-    public void mostrarArvore(){
+    /////////////////////////////
+
+    public void mostrarElementos(){
+        System.out.print("[");
+        for (No node:ArrayNos) {
+            // para cada nó no array,imprima
+            System.out.print(node.getChave() + " ");
+        }
+        System.out.print("]");
+        System.out.println("");
+    }
+
+    public void mostrarNos(){
+        System.out.print("[");
+        for (No node:ArrayNos) {
+            // para cada nó no array,imprima
+            System.out.print(node + " ");
+        }
+        System.out.print("]");
+        System.out.println("");
+    }
+
+
+    public No addChave(Object chave) {
+        No noApesquisar = pesquisar(raiz, chave);
+        // pesquisa para saber onde inserir o novo nó
+        if(ehExterno(noApesquisar)){
+            // se o nó pesquisado for externo(folha) adicionamos o novo nó como filho
+            // o noApesquisar nunca vai ser interno (nuca vai ter um filho), pois ele sempre é o último nó
+            No novoNo = new No(chave);
+            // adicionar novo nó no array
+            ArrayNos.add(novoNo);
+            // criar o novo nó e guardar a chave passada nele
+            int comparacao = compareChaves(chave, noApesquisar.getChave());
+            // fazendo a comparação aqui porque no 'if' não é possível comparar inteiros
+                if( comparacao < 0){
+                 // Se a primeira chave é menor que a segunda vai setar o novo nó como filho esquerdo
+                noApesquisar.setFilhoEsquerdo(novoNo);
+            }else{
+                noApesquisar.setFilhoDireito(novoNo);
+            }
+            tamanho++;
+            return novoNo;
+        }
+        else {
+            System.out.println("A chave já foi adicionada na árvore");
+            return null;
+        }
 
     }
+
 
     public void removeChave(Object chave) {
         // se o nó for folha
@@ -150,8 +181,9 @@ public class ArvoreBinariaPesquisa {
         // se o nó tem apenas um filho
         // se o nó tem dois filhos
     }
-    public No addChave(Object chave) {
-        return null;
+
+    public void mostrarArvore(){
+
     }
 
     /////////////////////////////
@@ -165,13 +197,13 @@ public class ArvoreBinariaPesquisa {
      }
 
      public boolean temFilhoEquerdo(No node){
-         System.out.println(" Nó '"+ node + "' tem filho esquerdo? ");
+        System.out.println("Nó '"+ node + "' tem filho esquerdo? ");
         return node.getFilhoEsquerdo()!= null;
 
      }
 
     public boolean temFilhoDireito(No node){
-        System.out.println(" Nó '"+ node + "' tem filho direito? ");
+        System.out.println("Nó '"+ node + "' tem filho direito? ");
         return node.getFilhoDireito()!= null;
     }
 
@@ -192,7 +224,6 @@ public class ArvoreBinariaPesquisa {
     public boolean isEmpty(){
         return tamanho == 0;
     }
-
 
 
 }
