@@ -109,14 +109,12 @@ public class ArvoreBinariaPesquisa {
 
     public boolean ehExterno(No node){
         // para ser externo/folha ele não pode ter nenhum filho
-        boolean checagem = node.getFilhoDireito() == null || node.getFilhoEsquerdo() == null;
-        return checagem;
+        return node.getFilhoDireito() == null || node.getFilhoEsquerdo() == null;
     }
 
     public boolean ehInterno(No node){
         // para ser interno ele deve possuir pelo menos um filho
-        boolean checagem = node.getFilhoDireito() != null && node.getFilhoEsquerdo() != null;
-        return checagem;
+        return node.getFilhoDireito() != null && node.getFilhoEsquerdo() != null;
     }
 
     /////////////////////////////
@@ -170,23 +168,117 @@ public class ArvoreBinariaPesquisa {
 
     }
 
-
-    public void removeChave(Object chave) {
+    public Object removeChave(Object chave) throws InvalidNoException {
         // se o nó for folha
         No node = pesquisar(raiz, chave);
-        if(ehExterno(node)){
-            node.setChave(null);
+        if(node == null){
+            throw new InvalidNoException("Não foi possível encontrar essa chave na árvore");
         }
-
+        if(ehExterno(node)){
+            // se é folha (não tem filhos)
+           Object temp = node.getChave();
+            // guarda o elemento da chave para poder retornar
+           if(ehFilhoDireito(node)){
+               node.getPai().setFilhoDireito(null);
+               // setar o nó como
+           }else{
+               node.getPai().setFilhoEsquerdo(null);
+           }
+           return temp;
+        }
         // se o nó tem apenas um filho
-        // se o nó tem dois filhos
+        if(temUmFilho(node)){
+            No filho = new No(chave);
+            if(node.getFilhoEsquerdo() != null){
+                filho = node.getFilhoEsquerdo();
+            }
+            else{
+                filho = node.getFilhoDireito();
+            }
+            if(ehFilhoDireito(node)){
+                node.getPai().setFilhoDireito(filho);
+            }
+            else{
+                node.getPai().setFilhoEsquerdo(filho);
+            }
+            filho.setPai(node.getPai());
+            Object temp = node.getChave();
+            node.setPai(null);
+            node.setFilhoEsquerdo(null);
+            node.setFilhoDireito(null);
+            return temp;
+
+        }
+        if(temDoisFilhos(node)){
+            Object temp = node.getChave();
+            // VER ISSO AQUI
+            No sucessor = sucessor(node.getFilhoDireito());
+            removeChave(node.getFilhoDireito());
+            node.setChave(sucessor.getChave());
+            return temp;
+        }
+        // VER ISSO AQUI
+        return node;
+
     }
+
+
 
     public void mostrarArvore(){
 
     }
 
     /////////////////////////////
+
+    public boolean temUmFilho(No node){
+        if(node.getFilhoEsquerdo() != null && node.getFilhoDireito() == null){
+            // se o filho esquerdo diferir de nulo e filho direiro for nulo
+            return true;
+        }
+        if(node.getFilhoEsquerdo() == null && node.getFilhoDireito() != null){
+            // se o filho esquerdo for nulo e filho direiro diferir de nulo
+            return true;
+        }
+        else{
+            return false;
+            // se tiver mais de um filho ou tiver dois filhos
+        }
+    }
+    public boolean temDoisFilhos(No node){
+        if(node.getFilhoEsquerdo() != null && node.getFilhoDireito() != null){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    public boolean ehFilhoDireito(No node) {
+        // pegar o pai desse nó
+        No paiDoNo = node.getPai();
+        // checar se é nulo
+        if (paiDoNo == null) {
+            return false;
+        }
+        // se for o filho direito = true
+        if (paiDoNo.getFilhoDireito() == node) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean ehFilhoEsquerdo(No node) {
+        // pegar o pai desse nó
+        No paiDoNo = node.getPai();
+        // checar se é nulo
+        if (paiDoNo == null) {
+            return false;
+        }
+        // se for o filho esquerdo = true
+        if (paiDoNo.getFilhoEsquerdo() == node) {
+            return true;
+        }
+        return false;
+    }
 
     public No getRaiz(){
         // retornar raiz da arvore
