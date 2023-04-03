@@ -3,12 +3,13 @@ import java.util.Comparator;
 public class Main {
     public static void main(String[] args) throws InvalidNoException {
         ArvoreBinariaPesquisa abp = new ArvoreBinariaPesquisa(1);
-        No a = abp.addChave(2);
+        No a = abp.addChave(3);
         No b = abp.addChave(10);
         No c = abp.addChave(7);
-        System.out.println(abp.temFilhoDireito(a));
-        abp.mostrarElementos();
-        abp.mostrarNos();
+        No v = abp.addChave(0);
+        No ab = abp.addChave(2);
+        abp.removeChave(10);
+        abp.mostrarArvore();
 
     }
 }

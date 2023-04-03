@@ -11,7 +11,6 @@ public class ArvoreBinariaPesquisa {
 
     No filho;
 
-    private ArrayList<No> ArrayNos;
 
     private Comparator<Object> comparadorDechaves;
 
@@ -35,9 +34,7 @@ public class ArvoreBinariaPesquisa {
                 }
             }
         };
-        this.ArrayNos = new ArrayList<No>();
         raiz = new No(chave);
-        ArrayNos.add(raiz);
         // já inicializa os filhos como nós externos
         tamanho = 1;
         // então não é necessário setar os filhos como "null"
@@ -51,6 +48,35 @@ public class ArvoreBinariaPesquisa {
         // se a primeira chave é igual à segunda, o método retorna "0"
         // se a primeira chave é maior que a segunda, o método retorna um número positivo,"1"
     }
+
+
+
+    public int altura(No node) {
+        int alturaEsquerda = 0;
+        int alturaDireita = 0;
+        if(ehExterno(node)){
+            return 0;
+        }
+        if(node.getFilhoEsquerdo() != null){
+            alturaEsquerda = altura(node.getFilhoEsquerdo()) +1;
+        }
+        if(node.getFilhoDireito() != null){
+            alturaDireita = altura(node.getFilhoDireito()) +1;
+        }
+        return Math.max(alturaEsquerda, alturaDireita);
+    }
+
+
+    public boolean ehExterno(No node){
+        // para ser externo/folha ele não pode ter nenhum filho
+        return node.getFilhoDireito() == null && node.getFilhoEsquerdo() == null;
+    }
+
+    public boolean ehInterno(No node){
+        // para ser interno ele deve possuir pelo menos um filho
+        return node.getFilhoDireito() != null || node.getFilhoEsquerdo() != null;
+    }
+
 
 
     public No pesquisar(No node, Object chave){
@@ -81,123 +107,38 @@ public class ArvoreBinariaPesquisa {
         }
     }
 
-    public void listaArvore(No node) {
-        ArrayNos.add(node);
-        System.out.println(ArrayNos);
-    }
-
-    public void emOrdem(No node){
-        // filho esquerdo, nó pai e depois filho direito
-        if(ehInterno(node)){
-            // filho esquerdo
-            emOrdem(node.getFilhoEsquerdo());
-            // nó pai
-            listaArvore(node);
-            // filho direito
-            emOrdem(node.getFilhoDireito());
-        }
-    }
-
-    public void preOrdem(No node){
-        // nó pai, filho esquerdo e depois filho direito
-        if(ehInterno(node)){
-            // nó pai
-            listaArvore(node);
-            // filho esquerdo
-            preOrdem(node.getFilhoEsquerdo());
-            // filho direito
-            preOrdem(node.getFilhoDireito());
-        }
-    }
-
-    public void posOrdem(No node){
-        // filho esquerdo, filho direito e depois nó pai
-        if(ehInterno(node)){
-            // filho esquerdo
-            preOrdem(node.getFilhoEsquerdo());
-            // filho direito
-            preOrdem(node.getFilhoDireito());
-            // nó pai
-            listaArvore(node);
-        }
-    }
-
-    public int altura(No node) {
-        int alturaEsquerda = 0;
-        int alturaDireita = 0;
-        if(ehExterno(node)){
-            return 0;
-        }
-        if(node.getFilhoEsquerdo() != null){
-            alturaEsquerda = altura(node.getFilhoEsquerdo()) +1;
-        }
-        if(node.getFilhoDireito() != null){
-            alturaDireita = altura(node.getFilhoDireito()) +1;
-        }
-        return Math.max(alturaEsquerda, alturaDireita);
-    }
-
-
-    public boolean ehExterno(No node){
-        // para ser externo/folha ele não pode ter nenhum filho
-        return node.getFilhoDireito() == null && node.getFilhoEsquerdo() == null;
-    }
-
-    public boolean ehInterno(No node){
-        // para ser interno ele deve possuir pelo menos um filho
-        return node.getFilhoDireito() != null || node.getFilhoEsquerdo() != null;
-    }
-
-    /////////////////////////////
-
-    public void mostrarElementos(){
-        System.out.print("[");
-        for (No node:ArrayNos) {
-            // para cada nó no array,imprima
-            System.out.print(node.getChave() + " ");
-        }
-        System.out.print("]");
-        System.out.println("");
-    }
-
-    public void mostrarNos(){
-        System.out.print("[");
-        for (No node:ArrayNos) {
-            // para cada nó no array,imprima
-            System.out.print(node + " ");
-        }
-        System.out.print("]");
-        System.out.println("");
-    }
-
 
     public No addChave(Object chave) {
         No noApesquisar = pesquisar(raiz, chave);
         // pesquisa para saber onde inserir o novo nó
-        if(ehExterno(noApesquisar)){
-            // se o nó pesquisado for externo(folha) adicionamos o novo nó como filho
-            // o noApesquisar nunca vai ser interno (nuca vai ter um filho), pois ele sempre é o último nó
+        if (ehExterno(noApesquisar)) {
+            // se o nó pesquisado for externo (folha) adicionamos o novo nó como filho
             No novoNo = new No(chave);
-            // adicionar novo nó no array
-            ArrayNos.add(novoNo);
             novoNo.setPai(noApesquisar);
-            // criar o novo nó e guardar a chave passada nele
             int comparacao = compareChaves(chave, noApesquisar.getChave());
-            // fazendo a comparação aqui porque no 'if' não é possível comparar inteiros
-                if( comparacao < 0){
-                 // Se a primeira chave é menor que a segunda vai setar o novo nó como filho esquerdo
+            if (comparacao < 0) {
+                // Se a primeira chave é menor que a segunda vai setar o novo nó como filho esquerdo
                 noApesquisar.setFilhoEsquerdo(novoNo);
-            }else{
+            } else {
                 noApesquisar.setFilhoDireito(novoNo);
             }
             tamanho++;
             return novoNo;
-        }
-        else {
+        } else if (noApesquisar.getFilhoEsquerdo() == null || noApesquisar.getFilhoDireito() == null) {
+            // se o nó pesquisado é interno e tem pelo menos um filho vazio, adicionamos o novo nó nesse filho vazio
+            No novoNo = new No(chave);
+            novoNo.setPai(noApesquisar);
+            if (noApesquisar.getFilhoEsquerdo() == null) {
+                noApesquisar.setFilhoEsquerdo(novoNo);
+            } else {
+                noApesquisar.setFilhoDireito(novoNo);
+            }
+            tamanho++;
+            return novoNo;
+        } else {
             System.out.println("A chave já foi adicionada na árvore");
             return null;
         }
-
     }
 
     public Object removeChave(Object chave) throws InvalidNoException {
@@ -279,8 +220,6 @@ public class ArvoreBinariaPesquisa {
 
 
     public void mostrarArvore(){
-        System.out.println(altura(raiz));
-        System.out.println(size());
         Object[][] m = new Object[altura(raiz)+1][size()];
         emOrdemP(raiz);
        for(int i=0; i < a.size(); i++ ){
@@ -288,7 +227,7 @@ public class ArvoreBinariaPesquisa {
        }
 
         for(int l = 0; l < altura(raiz)+1; l++){
-            for(int c = 0; c < size(); c++){
+            for(int c = 0; c < a.size(); c++){
                 //System.out.print(m[l][c]);
                 System.out.print(m[l][c]==null?"\t":m[l][c]+"\t");
             }
@@ -296,7 +235,6 @@ public class ArvoreBinariaPesquisa {
         }
     }
 
-    /////////////////////////////
 
     public boolean temUmFilho(No node){
         if(node.getFilhoEsquerdo() != null && node.getFilhoDireito() == null){
