@@ -9,6 +9,8 @@ public class ArvoreBinariaPesquisa {
     No raiz;
     int tamanho;
 
+    No filho;
+
     private ArrayList<No> ArrayNos;
 
     private Comparator<Object> comparadorDechaves;
@@ -17,11 +19,25 @@ public class ArvoreBinariaPesquisa {
         this.comparadorDechaves = new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
-                return 0;
+                int chave1 = (int) o1;
+                int chave2 = (int) o2;
+                // se a primeira chave é menor que a segunda, o método retorna um número negativo,"-1"
+                // se a primeira chave é igual à segunda, o método retorna "0"
+                // se a primeira chave é maior que a segunda, o método retorna um número positivo,"1"
+                if(chave1 < chave2){
+                    return -1;
+                }
+                if(chave1 > chave2){
+                    return 1;
+                }
+                else{
+                    return 0;
+                }
             }
         };
         this.ArrayNos = new ArrayList<No>();
         raiz = new No(chave);
+        ArrayNos.add(raiz);
         // já inicializa os filhos como nós externos
         tamanho = 1;
         // então não é necessário setar os filhos como "null"
@@ -149,6 +165,7 @@ public class ArvoreBinariaPesquisa {
             No novoNo = new No(chave);
             // adicionar novo nó no array
             ArrayNos.add(novoNo);
+            novoNo.setPai(noApesquisar);
             // criar o novo nó e guardar a chave passada nele
             int comparacao = compareChaves(chave, noApesquisar.getChave());
             // fazendo a comparação aqui porque no 'if' não é possível comparar inteiros
@@ -180,7 +197,7 @@ public class ArvoreBinariaPesquisa {
             // guarda o elemento da chave para poder retornar
            if(ehFilhoDireito(node)){
                node.getPai().setFilhoDireito(null);
-               // setar o nó como
+               // setar o nó como null
            }else{
                node.getPai().setFilhoEsquerdo(null);
            }
@@ -188,9 +205,8 @@ public class ArvoreBinariaPesquisa {
         }
         // se o nó tem apenas um filho
         if(temUmFilho(node)){
-            No filho = new No(chave);
             if(node.getFilhoEsquerdo() != null){
-                filho = node.getFilhoEsquerdo();
+              filho = node.getFilhoEsquerdo();
             }
             else{
                 filho = node.getFilhoDireito();
@@ -202,46 +218,65 @@ public class ArvoreBinariaPesquisa {
                 node.getPai().setFilhoEsquerdo(filho);
             }
             filho.setPai(node.getPai());
-            Object temp = node.getChave();
-            node.setPai(null);
-            node.setFilhoEsquerdo(null);
-            node.setFilhoDireito(null);
-            return temp;
+//            Object temp = node.getChave();
+//            node.setPai(null);
+//            node.setFilhoEsquerdo(null);
+//            node.setFilhoDireito(null);
+            return node.getChave();
 
         }
         if(temDoisFilhos(node)){
             Object temp = node.getChave();
-            // VER ISSO AQUI
             No sucessor = sucessor(node.getFilhoDireito());
-            removeChave(node.getFilhoDireito());
+            removeChave(sucessor);
             node.setChave(sucessor.getChave());
             return temp;
         }
-        // VER ISSO AQUI
-        return node;
+
+        return null;
 
     }
 
+    private No sucessor(No node){
+        if(node.getFilhoEsquerdo() == null){
+            return node;
+        }
+        else{
+            return sucessor(node.getFilhoEsquerdo());
+        }
+    }
 
 
     public void mostrarArvore(){
+        int[][] m = new int[altura(raiz)+1][size()];
+        for(int l = 0; l < altura(raiz)+1; l++) {
+            for (int c = 0; c < size(); c++) {
+                m[l][c] = 0;
+            }
+        }
 
+        for(int l = 0; l < altura(raiz)+1; l++){
+            for(int c = 0; c < size(); c++){
+                System.out.print(m[l][c]);
+            }
+            System.out.println();
+        }
     }
 
     /////////////////////////////
 
     public boolean temUmFilho(No node){
         if(node.getFilhoEsquerdo() != null && node.getFilhoDireito() == null){
-            // se o filho esquerdo diferir de nulo e filho direiro for nulo
+            // se o filho esquerdo não for nulo e filho direiro for nulo
             return true;
         }
         if(node.getFilhoEsquerdo() == null && node.getFilhoDireito() != null){
-            // se o filho esquerdo for nulo e filho direiro diferir de nulo
+            // se o filho esquerdo for nulo e filho direito não for nulo
             return true;
         }
         else{
             return false;
-            // se tiver mais de um filho ou tiver dois filhos
+            // se tiver mais de um filho
         }
     }
     public boolean temDoisFilhos(No node){
@@ -289,13 +324,13 @@ public class ArvoreBinariaPesquisa {
      }
 
      public boolean temFilhoEquerdo(No node){
-        System.out.println("Nó '"+ node + "' tem filho esquerdo? ");
+        System.out.println("Nó '"+ node.getChave() + "' tem filho esquerdo? ");
         return node.getFilhoEsquerdo()!= null;
 
      }
 
     public boolean temFilhoDireito(No node){
-        System.out.println("Nó '"+ node + "' tem filho direito? ");
+        System.out.println("Nó '"+ node.getChave() + "' tem filho direito? ");
         return node.getFilhoDireito()!= null;
     }
 
