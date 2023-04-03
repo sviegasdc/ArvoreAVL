@@ -60,15 +60,24 @@ public class ArvoreBinariaPesquisa {
         // passar pelo método de comparação onde pode retornar (1,-1 ou 0)
         int comparacao = compareChaves(chave, node.getChave());
         if (comparacao < 0){
-            return pesquisar(node.getFilhoEsquerdo(), chave);
+            if(node.getFilhoEsquerdo() !=null){
+                return pesquisar(node.getFilhoEsquerdo(), chave);
+            }
+            else{
+                return node;
+            }
             // pesquisar recursivamente passando o filho esquerdo do nó e a chave como parâmetro
         } else if (comparacao == 0) {
             return node;
             // se a comparação der igual, retorna o nó passado inicalmente no parãmetro
         }
         else {
-            return pesquisar(node.getFilhoDireito(), chave);
-            // pesquisar recursivamente passando o filho direito do nó e a chave como parâmetro
+            if(node.getFilhoDireito() !=null){
+                return pesquisar(node.getFilhoDireito(), chave);
+            }
+            else{
+                return node;
+            }
         }
     }
 
@@ -114,23 +123,29 @@ public class ArvoreBinariaPesquisa {
     }
 
     public int altura(No node) {
-        if(node == getRaiz()){
+        int alturaEsquerda = 0;
+        int alturaDireita = 0;
+        if(ehExterno(node)){
             return 0;
         }
-        int alturaEsquerda = altura(node.getFilhoEsquerdo());
-        int alturaDireita = altura(node.getFilhoDireito());
+        if(node.getFilhoEsquerdo() != null){
+            alturaEsquerda = altura(node.getFilhoEsquerdo()) +1;
+        }
+        if(node.getFilhoDireito() != null){
+            alturaDireita = altura(node.getFilhoDireito()) +1;
+        }
         return Math.max(alturaEsquerda, alturaDireita);
     }
 
 
     public boolean ehExterno(No node){
         // para ser externo/folha ele não pode ter nenhum filho
-        return node.getFilhoDireito() == null || node.getFilhoEsquerdo() == null;
+        return node.getFilhoDireito() == null && node.getFilhoEsquerdo() == null;
     }
 
     public boolean ehInterno(No node){
         // para ser interno ele deve possuir pelo menos um filho
-        return node.getFilhoDireito() != null && node.getFilhoEsquerdo() != null;
+        return node.getFilhoDireito() != null || node.getFilhoEsquerdo() != null;
     }
 
     /////////////////////////////
@@ -246,18 +261,36 @@ public class ArvoreBinariaPesquisa {
         }
     }
 
+    ArrayList<No> a = new ArrayList<>();
+
+    public void emOrdemP(No node){
+        // filho esquerdo, nó pai e depois filho direito
+        if(node.getFilhoEsquerdo() != null) {
+            // filho esquerdo
+            emOrdemP(node.getFilhoEsquerdo());
+        }
+            // nó pai
+            a.add(node);
+            // filho direito
+        if(node.getFilhoDireito() != null){
+            emOrdemP(node.getFilhoDireito());
+        }
+    }
+
 
     public void mostrarArvore(){
-        int[][] m = new int[altura(raiz)+1][size()];
-        for(int l = 0; l < altura(raiz)+1; l++) {
-            for (int c = 0; c < size(); c++) {
-                m[l][c] = 0;
-            }
-        }
+        System.out.println(altura(raiz));
+        System.out.println(size());
+        Object[][] m = new Object[altura(raiz)+1][size()];
+        emOrdemP(raiz);
+       for(int i=0; i < a.size(); i++ ){
+           m[profundidade(a.get(i))] [i]=a.get(i).getChave();
+       }
 
         for(int l = 0; l < altura(raiz)+1; l++){
             for(int c = 0; c < size(); c++){
-                System.out.print(m[l][c]);
+                //System.out.print(m[l][c]);
+                System.out.print(m[l][c]==null?"\t":m[l][c]+"\t");
             }
             System.out.println();
         }
