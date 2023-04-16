@@ -84,7 +84,7 @@ public class ArvoreBinariaPesquisa {
             return node;
         }
         // passar pelo método de comparação onde pode retornar (1,-1 ou 0)
-        int comparacao = compareChaves(chave, node.getChave());
+        int comparacao = compareChaves(node.getChave(),chave);
         if (comparacao < 0){
             if(node.getFilhoEsquerdo() !=null){
                 return pesquisar(node.getFilhoEsquerdo(), chave);
@@ -216,10 +216,12 @@ public class ArvoreBinariaPesquisa {
         if(node.getFilhoDireito() != null){
             emOrdemP(node.getFilhoDireito());
         }
+
     }
 
 
     public void mostrarArvore(){
+        a.clear(); // limpando a array para ser possível imprimir novamente
         Object[][] m = new Object[altura(raiz)+1][size()];
         emOrdemP(raiz);
        for(int i=0; i < a.size(); i++ ){
