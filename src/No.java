@@ -7,6 +7,8 @@ public class No {
 
     private No filhoDireito;
 
+    private int fatorDeBalanceamento;
+
 
     public No(Object newChave) {
         this.chave = newChave;
@@ -40,6 +42,13 @@ public class No {
 
     public No getFilhoDireito(){
         return filhoDireito;
+    }
+
+    public void setFB(int fatorDeBalanceamento){
+        this.fatorDeBalanceamento = fatorDeBalanceamento;
+    }
+    public int getFB(){
+        return fatorDeBalanceamento;
     }
 
 
