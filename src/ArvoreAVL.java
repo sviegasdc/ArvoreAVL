@@ -161,7 +161,6 @@ public class ArvoreAVL {
             // checar se é uma rotação simples para a esquerda (sinal do avô(-2) e do pai são iguais)
             else if (avo.getFB() < -1 && pai.getFB() <= 0) {
                 rotacaoSimplesEsquerda(pai);
-                atualizaFBRotacaoEsquerda(novoNo.getPai());
             } else if (avo.getFB() < -1 && pai.getFB() > 0) {
                 // primeiro uma rotação para a direita
                 rotacaoSimplesDireita(pai);
@@ -268,42 +267,6 @@ public class ArvoreAVL {
     }
 
     private No rotacaoSimplesEsquerda(No node) throws InvalidNoException {
-        No novoPai = node.getFilhoDireito();
-        // para caso haja 'colisão' dos nós ao lado esquerdo
-        No filhoEsquerdoDoFilhoEsquerdo;
-        int comparacao;
-        if(novoPai.getFilhoEsquerdo() != null){
-            filhoEsquerdoDoFilhoEsquerdo = novoPai.getFilhoEsquerdo();
-            // comparação para ver se o node pega o lugar do filho ou do neto do novoPai
-            comparacao = compareChaves(novoPai.getFilhoEsquerdo().getChave(), node.getChave());
-            if(comparacao < 0){
-                // filho esquerdo menor que node então node vai ser seu pai
-                node.setFilhoEsquerdo(filhoEsquerdoDoFilhoEsquerdo);
-                filhoEsquerdoDoFilhoEsquerdo.setPai(node);
-            }
-            if(comparacao > 0){
-                // filho esquerdo maior que node então node vai ser seu filho
-                filhoEsquerdoDoFilhoEsquerdo.setFilhoEsquerdo(node);
-                node.setPai(filhoEsquerdoDoFilhoEsquerdo);
-            }
-            else{
-                // isso provavelmente nunca vai acontecer mais é melhor prevenir
-                throw new InvalidNoException("As chaves são iguais");
-            }
-        }
-        // caso não haja 'colisão'
-        else {
-            // fazendo as novas ligações
-            (node.getPai()).setFilhoEsquerdo(novoPai);
-            novoPai.setPai(node.getPai());
-            node.setPai(novoPai);
-            novoPai.setFilhoEsquerdo(node);
-            node.setFilhoDireito(null);
-        }
-        return node;
-    }
-
-    private No rotacaoSimplesEsquerda(No node) throws InvalidNoException {
         No antigoPaidoNode = node.getPai();
         // para caso haja 'colisão' dos nós ao lado esquerdo
         No filhoEsquerdo;
@@ -312,21 +275,63 @@ public class ArvoreAVL {
             // não precisa de comparação pq o node sempre vai ser maior que o filho esquerdo (lógica da árvore)
             filhoEsquerdo.setPai(antigoPaidoNode);
             antigoPaidoNode.setFilhoEsquerdo(filhoEsquerdo);
-            antigoPaidoNode.setFilhoDireito(null);
+//            antigoPaidoNode.setFilhoDireito(null);
+            if(antigoPaidoNode.getPai() != null){
+                node.setPai(antigoPaidoNode.getPai());
+                if(ehFilhoEsquerdo(antigoPaidoNode)){
+                    (antigoPaidoNode.getPai()).setFilhoEsquerdo(node);
+                }
+                else{
+                    // se for filho direito
+                    (antigoPaidoNode.getPai()).setFilhoDireito(node);
+                }
+            }else{
+                node.setPai(null);
+                raiz = node;
+            }
         }
         // caso não haja 'colisão'
         else {
+            if(antigoPaidoNode.getPai() != null){
+                node.setPai(antigoPaidoNode.getPai());
+                if(ehFilhoEsquerdo(antigoPaidoNode)){
+                    (antigoPaidoNode.getPai()).setFilhoEsquerdo(node);
+                }
+                else{
+                    // se for filho direito
+                    (antigoPaidoNode.getPai()).setFilhoDireito(node);
+                }
+            }else{
+                node.setPai(null);
+                raiz = node;
+            }
             // fazendo as novas ligações
             antigoPaidoNode.setPai(node);
             node.setFilhoEsquerdo(antigoPaidoNode);
             antigoPaidoNode.setFilhoDireito(null);
-            if(antigoPaidoNode.getPai() != null){
-                node.setPai(antigoPaidoNode.getPai());
-            }else{
-                node.setPai(null);
-            }
         }
+        No pai = node;
+        No filhoEsquerdoDoNode = pai.getFilhoEsquerdo();
+        // calculando os novos fatores de balanceamento
+        int novoFbPai = pai.getFB() - 1 - Math.max(filhoEsquerdoDoNode.getFB(), 0);
+        int novoFbFilho = filhoEsquerdoDoNode.getFB() - 1 + Math.min(novoFbPai, 0);
+        // setando esse valores nos nós
+        pai.setFB(novoFbPai);
+        filhoEsquerdoDoNode.setFB(novoFbFilho);
         return node;
+    }
+
+    // método de atualizar o fator de balanceamento depois da rotação direita
+    private void atualizaFBRotacaoEsquerda(No node){
+        // trocar o fb do node e do seu filho esquerdo
+        No pai = node;
+        No filhoEsquerdoDoNode = pai.getFilhoEsquerdo();
+        // calculando os novos fatores de balanceamento
+        int novoFbPai = pai.getFB() - 1 - Math.max(filhoEsquerdoDoNode.getFB(), 0);
+        int novoFbFilho = filhoEsquerdoDoNode.getFB() - 1 + Math.min(novoFbPai, 0);
+        // setando esse valores nos nós
+        pai.setFB(novoFbPai);
+        filhoEsquerdoDoNode.setFB(novoFbFilho);
     }
 
     // método de atualizar o fator de balanceamento depois de uma inserção
@@ -403,19 +408,6 @@ public class ArvoreAVL {
             node = pai;
             pai = node.getPai();
         }
-    }
-
-    // método de atualizar o fator de balanceamento depois da rotação direita
-    private void atualizaFBRotacaoEsquerda(No node){
-        // trocar o fb do node e de seu filho esquerdo
-        No pai = node;
-        No filhoEsquerdoDoNode = pai.getFilhoEsquerdo();
-        // calculando os novos fatores de balanceamento
-        int novoFbPai = pai.getFB() - 1 - Math.max(filhoEsquerdoDoNode.getFB(), 0);
-        int novoFbFilho = filhoEsquerdoDoNode.getFB() - 1 + Math.min(novoFbPai, 0);
-        // setando esse valores nos nós
-        pai.setFB(novoFbPai);
-        filhoEsquerdoDoNode.setFB(novoFbFilho);
     }
 
     // método de atualizar o fator de balanceamento depois da rotação esquerda
