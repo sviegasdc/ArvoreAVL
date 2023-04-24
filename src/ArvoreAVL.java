@@ -315,6 +315,8 @@ public class ArvoreAVL {
             alturaEsquerda = altura(pai.getFilhoEsquerdo());
             if(alturaEsquerda == 0){
                 alturaEsquerda = 1;
+            }else{
+                alturaEsquerda = alturaEsquerda + 1;
             }
         }
         if(pai.getFilhoDireito() == null){
@@ -324,6 +326,8 @@ public class ArvoreAVL {
             alturaDireita = altura(pai.getFilhoDireito());
             if(alturaDireita == 0){
                 alturaDireita = 1;
+            }else{
+                alturaDireita = alturaDireita +1;
             }
         }
         // atualizar o fb
