@@ -180,20 +180,20 @@ public class ArvoreAVL {
         }
         if(ehExterno(node)){
             // se é folha (não tem filhos)
-           Object temp = node.getChave();
+            Object temp = node.getChave();
             // guarda o elemento da chave para poder retornar
-           if(ehFilhoDireito(node)){
-               node.getPai().setFilhoDireito(null);
-               // setar o nó como null
-           }else{
-               node.getPai().setFilhoEsquerdo(null);
-           }
-           return temp;
+            if(ehFilhoDireito(node)){
+                node.getPai().setFilhoDireito(null);
+                // setar o nó como null
+            }else{
+                node.getPai().setFilhoEsquerdo(null);
+            }
+            return temp;
         }
         // se o nó tem apenas um filho
         if(temUmFilho(node)){
             if(node.getFilhoEsquerdo() != null){
-              filho = node.getFilhoEsquerdo();
+                filho = node.getFilhoEsquerdo();
             }
             else{
                 filho = node.getFilhoDireito();
@@ -310,14 +310,11 @@ public class ArvoreAVL {
             node.setFilhoEsquerdo(antigoPaidoNode);
             antigoPaidoNode.setFilhoDireito(null);
         }
-        No pai = node;
-        No filhoEsquerdoDoNode = pai.getFilhoEsquerdo();
-        // calculando os novos fatores de balanceamento
-        int novoFbPai = pai.getFB() - 1 - Math.max(filhoEsquerdoDoNode.getFB(), 0);
-        int novoFbFilho = filhoEsquerdoDoNode.getFB() - 1 + Math.min(novoFbPai, 0);
-        // setando esse valores nos nós
-        pai.setFB(novoFbPai);
-        filhoEsquerdoDoNode.setFB(novoFbFilho);
+
+        int novoFBPai = node.getFB() + 1 - Math.min(antigoPaidoNode.getFB(),0);
+        int novoFBFilhoEsquerdo = antigoPaidoNode.getFB() + 1 + Math.max(novoFBPai,0);
+        node.setFB(novoFBPai);
+        antigoPaidoNode.setFB(novoFBFilhoEsquerdo);
         return node;
     }
 
@@ -432,9 +429,9 @@ public class ArvoreAVL {
             // filho esquerdo
             emOrdemP(node.getFilhoEsquerdo());
         }
-            // nó pai
-            a.add(node);
-            // filho direito
+        // nó pai
+        a.add(node);
+        // filho direito
         if(node.getFilhoDireito() != null){
             emOrdemP(node.getFilhoDireito());
         }
@@ -444,9 +441,9 @@ public class ArvoreAVL {
         a.clear(); // limpando a array para ser possível imprimir novamente
         Object[][] m = new Object[altura(raiz)+1][size()];
         emOrdemP(raiz);
-       for(int i=0; i < a.size(); i++ ){
-           m[profundidade(a.get(i))] [i]=a.get(i).getChave() + "[" + a.get(i).getFB() + "]";
-       }
+        for(int i=0; i < a.size(); i++ ){
+            m[profundidade(a.get(i))] [i]=a.get(i).getChave() + "[" + a.get(i).getFB() + "]";
+        }
 
         for(int l = 0; l < altura(raiz)+1; l++){
             for(int c = 0; c < a.size(); c++){
@@ -510,14 +507,14 @@ public class ArvoreAVL {
         // retornar raiz da arvore
         return raiz;
     }
-     public No setRaiz(No node){
+    public No setRaiz(No node){
         return raiz;
-     }
+    }
 
-     public boolean temFilhoEsquerdo(No node){
+    public boolean temFilhoEsquerdo(No node){
         System.out.println("Nó '"+ node.getChave() + "' tem filho esquerdo? ");
         return node.getFilhoEsquerdo()!= null;
-     }
+    }
 
     public boolean temFilhoDireito(No node){
         System.out.println("Nó '"+ node.getChave() + "' tem filho direito? ");
