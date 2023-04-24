@@ -161,7 +161,6 @@ public class ArvoreAVL {
             // checar se é uma rotação simples para a esquerda (sinal do avô(-2) e do pai são iguais)
             else if (avo.getFB() < -1 && pai.getFB() <= 0) {
                 rotacaoSimplesEsquerda(pai);
-                atualizaFBRotacaoEsquerda(novoNo.getPai());
             } else if (avo.getFB() < -1 && pai.getFB() > 0) {
                 // primeiro uma rotação para a direita
                 rotacaoSimplesDireita(pai);
@@ -181,20 +180,20 @@ public class ArvoreAVL {
         }
         if(ehExterno(node)){
             // se é folha (não tem filhos)
-           Object temp = node.getChave();
+            Object temp = node.getChave();
             // guarda o elemento da chave para poder retornar
-           if(ehFilhoDireito(node)){
-               node.getPai().setFilhoDireito(null);
-               // setar o nó como null
-           }else{
-               node.getPai().setFilhoEsquerdo(null);
-           }
-           return temp;
+            if(ehFilhoDireito(node)){
+                node.getPai().setFilhoDireito(null);
+                // setar o nó como null
+            }else{
+                node.getPai().setFilhoEsquerdo(null);
+            }
+            return temp;
         }
         // se o nó tem apenas um filho
         if(temUmFilho(node)){
             if(node.getFilhoEsquerdo() != null){
-              filho = node.getFilhoEsquerdo();
+                filho = node.getFilhoEsquerdo();
             }
             else{
                 filho = node.getFilhoDireito();
@@ -268,39 +267,68 @@ public class ArvoreAVL {
     }
 
     private No rotacaoSimplesEsquerda(No node) throws InvalidNoException {
-        No novoPai = node.getFilhoDireito();
+        No antigoPaidoNode = node.getPai();
         // para caso haja 'colisão' dos nós ao lado esquerdo
-        No filhoEsquerdoDoFilhoEsquerdo;
-        int comparacao;
-        if(novoPai.getFilhoEsquerdo() != null){
-            filhoEsquerdoDoFilhoEsquerdo = novoPai.getFilhoEsquerdo();
-            // comparação para ver se o node pega o lugar do filho ou do neto do novoPai
-            comparacao = compareChaves(novoPai.getFilhoEsquerdo().getChave(), node.getChave());
-            if(comparacao < 0){
-                // filho esquerdo menor que node então node vai ser seu pai
-                node.setFilhoEsquerdo(filhoEsquerdoDoFilhoEsquerdo);
-                filhoEsquerdoDoFilhoEsquerdo.setPai(node);
-            }
-            if(comparacao > 0){
-                // filho esquerdo maior que node então node vai ser seu filho
-                filhoEsquerdoDoFilhoEsquerdo.setFilhoEsquerdo(node);
-                node.setPai(filhoEsquerdoDoFilhoEsquerdo);
-            }
-            else{
-                // isso provavelmente nunca vai acontecer mais é melhor prevenir
-                throw new InvalidNoException("As chaves são iguais");
+        No filhoEsquerdo;
+        if(node.getFilhoEsquerdo() != null){
+            filhoEsquerdo = node.getFilhoEsquerdo();
+            // não precisa de comparação pq o node sempre vai ser maior que o filho esquerdo (lógica da árvore)
+            filhoEsquerdo.setPai(antigoPaidoNode);
+            antigoPaidoNode.setFilhoEsquerdo(filhoEsquerdo);
+//            antigoPaidoNode.setFilhoDireito(null);
+            if(antigoPaidoNode.getPai() != null){
+                node.setPai(antigoPaidoNode.getPai());
+                if(ehFilhoEsquerdo(antigoPaidoNode)){
+                    (antigoPaidoNode.getPai()).setFilhoEsquerdo(node);
+                }
+                else{
+                    // se for filho direito
+                    (antigoPaidoNode.getPai()).setFilhoDireito(node);
+                }
+            }else{
+                node.setPai(null);
+                raiz = node;
             }
         }
         // caso não haja 'colisão'
         else {
+            if(antigoPaidoNode.getPai() != null){
+                node.setPai(antigoPaidoNode.getPai());
+                if(ehFilhoEsquerdo(antigoPaidoNode)){
+                    (antigoPaidoNode.getPai()).setFilhoEsquerdo(node);
+                }
+                else{
+                    // se for filho direito
+                    (antigoPaidoNode.getPai()).setFilhoDireito(node);
+                }
+            }else{
+                node.setPai(null);
+                raiz = node;
+            }
             // fazendo as novas ligações
-            (node.getPai()).setFilhoEsquerdo(novoPai);
-            novoPai.setPai(node.getPai());
-            node.setPai(novoPai);
-            novoPai.setFilhoEsquerdo(node);
-            node.setFilhoDireito(null);
+            antigoPaidoNode.setPai(node);
+            node.setFilhoEsquerdo(antigoPaidoNode);
+            antigoPaidoNode.setFilhoDireito(null);
         }
+
+        int novoFBPai = node.getFB() + 1 - Math.min(antigoPaidoNode.getFB(),0);
+        int novoFBFilhoEsquerdo = antigoPaidoNode.getFB() + 1 + Math.max(novoFBPai,0);
+        node.setFB(novoFBPai);
+        antigoPaidoNode.setFB(novoFBFilhoEsquerdo);
         return node;
+    }
+
+    // método de atualizar o fator de balanceamento depois da rotação direita
+    private void atualizaFBRotacaoEsquerda(No node){
+        // trocar o fb do node e do seu filho esquerdo
+        No pai = node;
+        No filhoEsquerdoDoNode = pai.getFilhoEsquerdo();
+        // calculando os novos fatores de balanceamento
+        int novoFbPai = pai.getFB() - 1 - Math.max(filhoEsquerdoDoNode.getFB(), 0);
+        int novoFbFilho = filhoEsquerdoDoNode.getFB() - 1 + Math.min(novoFbPai, 0);
+        // setando esse valores nos nós
+        pai.setFB(novoFbPai);
+        filhoEsquerdoDoNode.setFB(novoFbFilho);
     }
 
     // método de atualizar o fator de balanceamento depois de uma inserção
@@ -315,6 +343,8 @@ public class ArvoreAVL {
             alturaEsquerda = altura(pai.getFilhoEsquerdo());
             if(alturaEsquerda == 0){
                 alturaEsquerda = 1;
+            }else{
+                alturaEsquerda = alturaEsquerda + 1;
             }
         }
         if(pai.getFilhoDireito() == null){
@@ -324,6 +354,8 @@ public class ArvoreAVL {
             alturaDireita = altura(pai.getFilhoDireito());
             if(alturaDireita == 0){
                 alturaDireita = 1;
+            }else{
+                alturaDireita = alturaDireita +1;
             }
         }
         // atualizar o fb
@@ -375,19 +407,6 @@ public class ArvoreAVL {
         }
     }
 
-    // método de atualizar o fator de balanceamento depois da rotação direita
-    private void atualizaFBRotacaoEsquerda(No node){
-        // trocar o fb do node e de seu filho esquerdo
-        No pai = node;
-        No filhoEsquerdoDoNode = pai.getFilhoEsquerdo();
-        // calculando os novos fatores de balanceamento
-        int novoFbPai = pai.getFB() - 1 - Math.max(filhoEsquerdoDoNode.getFB(), 0);
-        int novoFbFilho = filhoEsquerdoDoNode.getFB() - 1 + Math.min(novoFbPai, 0);
-        // setando esse valores nos nós
-        pai.setFB(novoFbPai);
-        filhoEsquerdoDoNode.setFB(novoFbFilho);
-    }
-
     // método de atualizar o fator de balanceamento depois da rotação esquerda
     private void atualizaFBRotacaoDireita(No node){
         // trocar o fb do node e de seu filho direito
@@ -410,9 +429,9 @@ public class ArvoreAVL {
             // filho esquerdo
             emOrdemP(node.getFilhoEsquerdo());
         }
-            // nó pai
-            a.add(node);
-            // filho direito
+        // nó pai
+        a.add(node);
+        // filho direito
         if(node.getFilhoDireito() != null){
             emOrdemP(node.getFilhoDireito());
         }
@@ -422,9 +441,9 @@ public class ArvoreAVL {
         a.clear(); // limpando a array para ser possível imprimir novamente
         Object[][] m = new Object[altura(raiz)+1][size()];
         emOrdemP(raiz);
-       for(int i=0; i < a.size(); i++ ){
-           m[profundidade(a.get(i))] [i]=a.get(i).getChave() + "[" + a.get(i).getFB() + "]";
-       }
+        for(int i=0; i < a.size(); i++ ){
+            m[profundidade(a.get(i))] [i]=a.get(i).getChave() + "[" + a.get(i).getFB() + "]";
+        }
 
         for(int l = 0; l < altura(raiz)+1; l++){
             for(int c = 0; c < a.size(); c++){
@@ -488,14 +507,14 @@ public class ArvoreAVL {
         // retornar raiz da arvore
         return raiz;
     }
-     public No setRaiz(No node){
+    public No setRaiz(No node){
         return raiz;
-     }
+    }
 
-     public boolean temFilhoEsquerdo(No node){
+    public boolean temFilhoEsquerdo(No node){
         System.out.println("Nó '"+ node.getChave() + "' tem filho esquerdo? ");
         return node.getFilhoEsquerdo()!= null;
-     }
+    }
 
     public boolean temFilhoDireito(No node){
         System.out.println("Nó '"+ node.getChave() + "' tem filho direito? ");

@@ -81,19 +81,10 @@
           <properties class="java.lang.ClassCastException" package="java.lang" />
           <option name="timeStamp" value="1" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/ArvoreAVL.java</url>
-          <line>306</line>
-          <properties class="ArvoreAVL" method="atualizaFBInsercao">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ArvoreAVL.java</url>
-          <line>113</line>
-          <option name="timeStamp" value="18" />
+          <url>file://$PROJECT_DIR$/src/Main.java</url>
+          <line>6</line>
+          <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
