@@ -73,7 +73,7 @@ public class ArvoreAVL {
         }
         // passar pelo método de comparação onde pode retornar (1,-1 ou 0)
         int comparacao = compareChaves(node.getChave(),chave);
-        if (comparacao < 0){
+        if (comparacao > 0){
             if(node.getFilhoEsquerdo() !=null){
                 return pesquisar(node.getFilhoEsquerdo(), chave);
             }
@@ -170,7 +170,6 @@ public class ArvoreAVL {
                 rotacaoSimplesEsquerda(novoNo.getPai());
                 atualizaFBRotacaoEsquerda(novoNo);
             }
-
         }
     }
 
@@ -309,38 +308,30 @@ public class ArvoreAVL {
         No pai = node.getPai();
         int alturaDireita;
         int alturaEsquerda;
-        // checar se tem outro filho além do que acabou de ser inserido
         if(pai.getFilhoEsquerdo() == null){
             alturaEsquerda = 0;
         }
         else{
             alturaEsquerda = altura(pai.getFilhoEsquerdo());
+            if(alturaEsquerda == 0){
+                alturaEsquerda = 1;
+            }
         }
         if(pai.getFilhoDireito() == null){
             alturaDireita = 0;
         }
         else{
             alturaDireita = altura(pai.getFilhoDireito());
+            if(alturaDireita == 0){
+                alturaDireita = 1;
+            }
         }
         // atualizar o fb
         int fb = alturaEsquerda - alturaDireita;
         pai.setFB(fb);
-        while (pai!=null){
-            if(ehFilhoEsquerdo(node)){
-                pai.setFB(pai.getFB() +1);
-            }
-            // se node for filho direito
-            else{
-                pai.setFB(pai.getFB() -1);
-            }
-
-            // checagem de parada
-            if(pai.getFB() == 0){
-                break;
-            }
-            // atualizando variáveis para o while
-            node = pai;
-            pai = node.getPai();
+        // checar se tem outro filho além do que acabou de ser inserido
+        if(pai.getFB() !=0 && pai.getPai() != null){
+            atualizaFBInsercao(pai);
         }
     }
 
@@ -527,6 +518,4 @@ public class ArvoreAVL {
     public boolean isEmpty(){
         return tamanho == 0;
     }
-
-
 }

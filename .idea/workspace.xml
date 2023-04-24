@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d4e5ccc8-6bfe-4546-ba69-c239c1e24216" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ArvoreBinariaPesquisa.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ArvoreBinariaPesquisa.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ArvoreAVL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ArvoreAVL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/No.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/No.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,25 +81,19 @@
           <properties class="java.lang.ClassCastException" package="java.lang" />
           <option name="timeStamp" value="1" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ArvoreBinariaPesquisa.java</url>
-          <line>100</line>
-          <option name="timeStamp" value="3" />
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/ArvoreAVL.java</url>
+          <line>306</line>
+          <properties class="ArvoreAVL" method="atualizaFBInsercao">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ArvoreBinariaPesquisa.java</url>
-          <line>312</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ArvoreBinariaPesquisa.java</url>
-          <line>322</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ArvoreBinariaPesquisa.java</url>
-          <line>297</line>
-          <option name="timeStamp" value="6" />
+          <url>file://$PROJECT_DIR$/src/ArvoreAVL.java</url>
+          <line>113</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
