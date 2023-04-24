@@ -303,6 +303,32 @@ public class ArvoreAVL {
         return node;
     }
 
+    private No rotacaoSimplesEsquerda(No node) throws InvalidNoException {
+        No antigoPaidoNode = node.getPai();
+        // para caso haja 'colisão' dos nós ao lado esquerdo
+        No filhoEsquerdo;
+        if(node.getFilhoEsquerdo() != null){
+            filhoEsquerdo = node.getFilhoEsquerdo();
+            // não precisa de comparação pq o node sempre vai ser maior que o filho esquerdo (lógica da árvore)
+            filhoEsquerdo.setPai(antigoPaidoNode);
+            antigoPaidoNode.setFilhoEsquerdo(filhoEsquerdo);
+            antigoPaidoNode.setFilhoDireito(null);
+        }
+        // caso não haja 'colisão'
+        else {
+            // fazendo as novas ligações
+            antigoPaidoNode.setPai(node);
+            node.setFilhoEsquerdo(antigoPaidoNode);
+            antigoPaidoNode.setFilhoDireito(null);
+            if(antigoPaidoNode.getPai() != null){
+                node.setPai(antigoPaidoNode.getPai());
+            }else{
+                node.setPai(null);
+            }
+        }
+        return node;
+    }
+
     // método de atualizar o fator de balanceamento depois de uma inserção
     private void atualizaFBInsercao(No node){
         No pai = node.getPai();
