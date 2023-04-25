@@ -13,6 +13,12 @@ public class ArvoreAVL {
         this.comparadorDechaves = new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
+//                if (o1 instanceof No) {
+//                    o1 = ((No) o1).getChave();
+//                }
+//                if (o2 instanceof No) {
+//                    o2 = ((No) o2).getChave();
+//                }
                 int chave1 = (int) o1;
                 int chave2 = (int) o2;
                 if(chave1 < chave2){
@@ -136,6 +142,11 @@ public class ArvoreAVL {
         }
     }
 
+    //checar rotações
+    // if Pai = 2 filhoE >= 0 (positivo) Simples Direita else dupla Direita (primeiro a esquerda e depois a direita)
+    // if Pai = -2 filhoD <= 0 (negativo) Simples Esquerda else dupla Esquerda (primeiro a direita e depois a esquerda)
+    // se rotação dupla nada mais é que duas simples então chamar as simples em ordem
+
     private void checaRotacao(No novoNo) throws InvalidNoException {
         No pai = novoNo.getPai();
         // evitando o NullPointerException
@@ -174,6 +185,11 @@ public class ArvoreAVL {
             throw new InvalidNoException("Não foi possível encontrar essa chave na árvore");
         }
         if(ehExterno(node)){
+            if(node == raiz && node.getFilhoEsquerdo() == null && node.getFilhoDireito() == null){
+                Object temp = node.getChave();
+                node.setChave(null);
+                return temp;
+            }
             // se é folha (não tem filhos)
             Object temp = node.getChave();
             // guarda o elemento da chave para poder retornar
@@ -212,6 +228,46 @@ public class ArvoreAVL {
         return null;
     }
 
+    // método de atualizar o fator de balanceamento depois de uma remoção
+    private void atualizaFBRemocao(No node){
+        No pai = node.getPai();
+        int alturaDireita;
+        int alturaEsquerda;
+        // checar se tem outro filho além do que acabou de ser inserido
+        if(pai.getFilhoEsquerdo() == null){
+            alturaEsquerda = 0;
+        }
+        else{
+            alturaEsquerda = altura(node.getFilhoEsquerdo());
+        }
+        if(pai.getFilhoDireito() == null){
+            alturaDireita = 0;
+        }
+        else{
+            alturaDireita = altura(node.getFilhoDireito());
+        }
+        // atualizar o fb
+        int fb = alturaEsquerda - alturaDireita;
+        pai.setFB(fb);
+        while (pai!=null){
+            if(ehFilhoEsquerdo(node)){
+                pai.setFB(pai.getFB() -1);
+            }
+            // se node for filho direito
+            else{
+                pai.setFB(pai.getFB() +1);
+            }
+
+            // checagem de parada
+            if(pai.getFB() != 0){
+                break;
+            }
+            // atualizando variáveis para o while
+            node = pai;
+            pai = node.getPai();
+        }
+    }
+
     private No sucessor(No node){
         if(node.getFilhoEsquerdo() == null){
             return node;
@@ -221,10 +277,6 @@ public class ArvoreAVL {
         }
     }
 
-    //checar rotações
-    // if Pai = 2 filhoE >= 0 (positivo) Simples Direita else dupla Direita (primeiro a esquerda e depois a direita)
-    // if Pai = -2 filhoD <= 0 (negativo) Simples Esquerda else dupla Esquerda (primeiro a direita e depois a esquerda)
-    // se rotação dupla nada mais é que duas simples pq não chamar as simples em ordem? (testar)
 
     private No rotacaoSimplesDireita(No node) throws InvalidNoException {
         No antigoPaidoNode = node.getPai();
@@ -323,6 +375,8 @@ public class ArvoreAVL {
             node.setFilhoEsquerdo(antigoPaidoNode);
             antigoPaidoNode.setFilhoDireito(null);
         }
+//        NewBalB = B.FB + 1 - Math.min(A.FB, 0);
+//        NewBalA = A.FB + 1 + Math.max(NewBalB, 0);
         int novoFBFilhoEsquerdo = antigoPaidoNode.getFB() + 1 - Math.min(node.getFB(),0);
         int novoFBPai = node.getFB() + 1 + Math.max(novoFBFilhoEsquerdo,0);
         node.setFB(novoFBPai);
@@ -363,46 +417,6 @@ public class ArvoreAVL {
         // checar se tem outro filho além do que acabou de ser inserido
         if(pai.getFB() !=0 && pai.getPai() != null){
             atualizaFBInsercao(pai);
-        }
-    }
-
-    // método de atualizar o fator de balanceamento depois de uma remoção
-    private void atulizaFBRemocao(No node){
-        No pai = node.getPai();
-        int alturaDireita;
-        int alturaEsquerda;
-        // checar se tem outro filho além do que acabou de ser inserido
-        if(pai.getFilhoEsquerdo() == null){
-            alturaEsquerda = 0;
-        }
-        else{
-            alturaEsquerda = altura(node.getFilhoEsquerdo());
-        }
-        if(pai.getFilhoDireito() == null){
-            alturaDireita = 0;
-        }
-        else{
-            alturaDireita = altura(node.getFilhoDireito());
-        }
-        // atualizar o fb
-        int fb = alturaEsquerda - alturaDireita;
-        pai.setFB(fb);
-        while (pai!=null){
-            if(ehFilhoEsquerdo(node)){
-                pai.setFB(pai.getFB() -1);
-            }
-            // se node for filho direito
-            else{
-                pai.setFB(pai.getFB() +1);
-            }
-
-            // checagem de parada
-            if(pai.getFB() != 0){
-                break;
-            }
-            // atualizando variáveis para o while
-            node = pai;
-            pai = node.getPai();
         }
     }
 
