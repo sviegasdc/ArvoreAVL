@@ -13,12 +13,13 @@ public class ArvoreAVL {
         this.comparadorDechaves = new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
-//                if (o1 instanceof No) {
-//                    o1 = ((No) o1).getChave();
-//                }
-//                if (o2 instanceof No) {
-//                    o2 = ((No) o2).getChave();
-//                }
+                // para evitar erro de nó sendo passado
+                if (o1 instanceof No) {
+                    o1 = ((No) o1).getChave();
+                }
+                if (o2 instanceof No) {
+                    o2 = ((No) o2).getChave();
+                }
                 int chave1 = (int) o1;
                 int chave2 = (int) o2;
                 if(chave1 < chave2){
@@ -148,135 +149,37 @@ public class ArvoreAVL {
     // se rotação dupla nada mais é que duas simples então chamar as simples em ordem
 
     private void checaRotacao(No novoNo) throws InvalidNoException {
-        No pai = novoNo.getPai();
-        // evitando o NullPointerException
-        if(pai.getPai() != null){
-            No avo = pai.getPai();
-            // ROTAÇÃO DIREITA
-            // checar se é uma rotação simples para a direita (sinal do avô(2) e do pai são iguais)
-            if(avo.getFB() > 1 && pai.getFB() >= 0 ){
-                rotacaoSimplesDireita(pai);
-                // atualizar fb
-            }
-            // checar se é uma rotação dupla para a direita (sinal do avô(2) e do pai são diferentes)
-            else if (avo.getFB() > 1 && pai.getFB() < 0) {
-                // primeiro uma rotação para esquerda
-                rotacaoSimplesEsquerda(pai);
-                // depois uma para direita
-                rotacaoSimplesDireita(novoNo.getPai());
-            }
-            // ROTAÇÃO ESQUERDA
-            // checar se é uma rotação simples para a esquerda (sinal do avô(-2) e do pai são iguais)
-            else if (avo.getFB() < -1 && pai.getFB() <= 0) {
-                rotacaoSimplesEsquerda(pai);
-            } else if (avo.getFB() < -1 && pai.getFB() > 0) {
-                // primeiro uma rotação para a direita
-                rotacaoSimplesDireita(pai);
-                // depois uma rotação a esquerda
-                rotacaoSimplesEsquerda(novoNo.getPai());
+        if(novoNo.getPai() != null){
+            No pai = novoNo.getPai();
+            // evitando o NullPointerException
+            if(pai.getPai() != null) {
+                No avo = pai.getPai();
+                // ROTAÇÃO DIREITA
+                // checar se é uma rotação simples para a direita (sinal do avô(2) e do pai são iguais)
+                if (avo.getFB() > 1 && pai.getFB() >= 0) {
+                    rotacaoSimplesDireita(pai);
+                    // atualizar fb
+                }
+                // checar se é uma rotação dupla para a direita (sinal do avô(2) e do pai são diferentes)
+                else if (avo.getFB() > 1 && pai.getFB() < 0) {
+                    // primeiro uma rotação para esquerda
+                    rotacaoSimplesEsquerda(pai);
+                    // depois uma para direita
+                    rotacaoSimplesDireita(novoNo.getPai());
+                }
+                // ROTAÇÃO ESQUERDA
+                // checar se é uma rotação simples para a esquerda (sinal do avô(-2) e do pai são iguais)
+                else if (avo.getFB() < -1 && pai.getFB() <= 0) {
+                    rotacaoSimplesEsquerda(pai);
+                } else if (avo.getFB() < -1 && pai.getFB() > 0) {
+                    // primeiro uma rotação para a direita
+                    rotacaoSimplesDireita(pai);
+                    // depois uma rotação a esquerda
+                    rotacaoSimplesEsquerda(novoNo.getPai());
+                }
             }
         }
     }
-
-    public Object removeChave(Object chave) throws InvalidNoException {
-        // se o nó for folha
-        No node = pesquisar(raiz, chave);
-        if(node == null){
-            throw new InvalidNoException("Não foi possível encontrar essa chave na árvore");
-        }
-        if(ehExterno(node)){
-            if(node == raiz && node.getFilhoEsquerdo() == null && node.getFilhoDireito() == null){
-                Object temp = node.getChave();
-                node.setChave(null);
-                return temp;
-            }
-            // se é folha (não tem filhos)
-            Object temp = node.getChave();
-            // guarda o elemento da chave para poder retornar
-            if(ehFilhoDireito(node)){
-                node.getPai().setFilhoDireito(null);
-                // setar o nó como null
-            }else{
-                node.getPai().setFilhoEsquerdo(null);
-            }
-            return temp;
-        }
-        // se o nó tem apenas um filho
-        if(temUmFilho(node)){
-            if(node.getFilhoEsquerdo() != null){
-                filho = node.getFilhoEsquerdo();
-            }
-            else{
-                filho = node.getFilhoDireito();
-            }
-            if(ehFilhoDireito(node)){
-                node.getPai().setFilhoDireito(filho);
-            }
-            else{
-                node.getPai().setFilhoEsquerdo(filho);
-            }
-            filho.setPai(node.getPai());
-            return node.getChave();
-        }
-        if(temDoisFilhos(node)){
-            Object temp = node.getChave();
-            No sucessor = sucessor(node.getFilhoDireito());
-            removeChave(sucessor);
-            node.setChave(sucessor.getChave());
-            return temp;
-        }
-        return null;
-    }
-
-    // método de atualizar o fator de balanceamento depois de uma remoção
-    private void atualizaFBRemocao(No node){
-        No pai = node.getPai();
-        int alturaDireita;
-        int alturaEsquerda;
-        // checar se tem outro filho além do que acabou de ser inserido
-        if(pai.getFilhoEsquerdo() == null){
-            alturaEsquerda = 0;
-        }
-        else{
-            alturaEsquerda = altura(node.getFilhoEsquerdo());
-        }
-        if(pai.getFilhoDireito() == null){
-            alturaDireita = 0;
-        }
-        else{
-            alturaDireita = altura(node.getFilhoDireito());
-        }
-        // atualizar o fb
-        int fb = alturaEsquerda - alturaDireita;
-        pai.setFB(fb);
-        while (pai!=null){
-            if(ehFilhoEsquerdo(node)){
-                pai.setFB(pai.getFB() -1);
-            }
-            // se node for filho direito
-            else{
-                pai.setFB(pai.getFB() +1);
-            }
-
-            // checagem de parada
-            if(pai.getFB() != 0){
-                break;
-            }
-            // atualizando variáveis para o while
-            node = pai;
-            pai = node.getPai();
-        }
-    }
-
-    private No sucessor(No node){
-        if(node.getFilhoEsquerdo() == null){
-            return node;
-        }
-        else{
-            return sucessor(node.getFilhoEsquerdo());
-        }
-    }
-
 
     private No rotacaoSimplesDireita(No node) throws InvalidNoException {
         No antigoPaidoNode = node.getPai();
@@ -384,39 +287,125 @@ public class ArvoreAVL {
         return node;
     }
 
+    public Object removeChave(Object chave) throws InvalidNoException {
+        // se o nó for folha
+        No node = pesquisar(raiz, chave);
+        No noGuardado = node;
+        if(node == null){
+            throw new InvalidNoException("Não foi possível encontrar essa chave na árvore");
+        }
+        if(ehExterno(node)){
+            if(node == raiz && node.getFilhoEsquerdo() == null && node.getFilhoDireito() == null){
+                Object temp = node.getChave();
+                node.setChave(null);
+                atualizaFBRemocao(noGuardado);
+                checaRotacao(noGuardado);
+                return temp;
+            }
+            // se é folha (não tem filhos)
+            Object temp = node.getChave();
+            // guarda o elemento da chave para poder retornar
+            if(ehFilhoDireito(node)){
+                node.getPai().setFilhoDireito(null);
+                // setar o nó como null
+            }else{
+                node.getPai().setFilhoEsquerdo(null);
+            }
+            atualizaFBRemocao(noGuardado);
+            checaRotacao(noGuardado);
+            return temp;
+        }
+        // se o nó tem apenas um filho
+        if(temUmFilho(node)){
+            if(node.getFilhoEsquerdo() != null){
+                filho = node.getFilhoEsquerdo();
+            }
+            else{
+                filho = node.getFilhoDireito();
+            }
+            if(ehFilhoDireito(node)){
+                node.getPai().setFilhoDireito(filho);
+            }
+            else{
+                node.getPai().setFilhoEsquerdo(filho);
+            }
+            filho.setPai(node.getPai());
+            atualizaFBRemocao(noGuardado);
+            checaRotacao(noGuardado);
+            return node.getChave();
+        }
+        if(temDoisFilhos(node)){
+            Object temp = node.getChave();
+            No sucessor = sucessor(node.getFilhoDireito());
+            removeChave(sucessor);
+            node.setChave(sucessor.getChave());
+            atualizaFBRemocao(noGuardado);
+            checaRotacao(noGuardado);
+            return temp;
+        }
+        return null;
+    }
+
+    // método de atualizar o fator de balanceamento depois de uma remoção
+    private void atualizaFBRemocao(No node) throws InvalidNoException {
+       No atual = node;
+       boolean pare = false;
+       while(!pare && atual.getPai() != null){
+           No pai = atual.getPai();
+           int comparacao = compareChaves(atual.getChave(), pai.getChave());
+           if(comparacao < 0){ // pai é maior
+               pai.setFB(pai.getFB()+ (-1));
+           }
+           if(comparacao > 0 ){ // atual é maior
+               pai.setFB(pai.getFB() + 1);
+           }
+           else{
+               throw new InvalidNoException("As chaves são iguais (!FBInserção!)");
+           }
+           checaRotacao(atual);
+           if(atual == raiz){
+               pare = true;
+           }
+           if(pai.getFB() == 00){
+               pare = true;
+           }
+           atual = atual.getPai();
+       }
+    }
+
+    private No sucessor(No node){
+        if(node.getFilhoEsquerdo() == null){
+            return node;
+        }
+        else{
+            return sucessor(node.getFilhoEsquerdo());
+        }
+    }
+
     // método de atualizar o fator de balanceamento depois de uma inserção
-    private void atualizaFBInsercao(No node){
-        No pai = node.getPai();
-        int alturaDireita;
-        int alturaEsquerda;
-        if(pai.getFilhoEsquerdo() == null){
-            alturaEsquerda = 0;
-        }
-        else{
-            alturaEsquerda = altura(pai.getFilhoEsquerdo());
-            if(alturaEsquerda == 0){
-                alturaEsquerda = 1;
-            }else{
-                alturaEsquerda = alturaEsquerda + 1;
-            }
-        }
-        if(pai.getFilhoDireito() == null){
-            alturaDireita = 0;
-        }
-        else{
-            alturaDireita = altura(pai.getFilhoDireito());
-            if(alturaDireita == 0){
-                alturaDireita = 1;
-            }else{
-                alturaDireita = alturaDireita +1;
-            }
-        }
-        // atualizar o fb
-        int fb = alturaEsquerda - alturaDireita;
-        pai.setFB(fb);
-        // checar se tem outro filho além do que acabou de ser inserido
-        if(pai.getFB() !=0 && pai.getPai() != null){
-            atualizaFBInsercao(pai);
+    private void atualizaFBInsercao(No node) throws InvalidNoException {
+       No atual = node;
+       boolean pare = false;
+       while(!pare && atual.getPai() !=null){
+           No pai = atual.getPai();
+           int comparacao = compareChaves(atual.getChave(), pai.getChave());
+           if(comparacao < 0){ // pai é maior
+               pai.setFB((pai.getFB()) + 1);
+           }
+           if(comparacao > 0){ // atual maior
+               pai.setFB(pai.getFB()+(-1));
+           }
+           else{
+               throw new InvalidNoException("As chaves são iguais (!FBInserção!)");
+           }
+           checaRotacao(atual);
+           if(atual == raiz){
+               pare = true;
+           }
+           if(pai.getFB() == 00){
+               pare = true;
+           }
+           atual = atual.getPai();
         }
     }
 
