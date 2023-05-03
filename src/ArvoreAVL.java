@@ -288,14 +288,14 @@ public class ArvoreAVL {
     private No rotacaoSimplesEsquerda(No node) throws InvalidNoException {
         No antigoPaidoNode = node.getPai();
         // para caso haja 'colisão' dos nós ao lado esquerdo
-        No filhoEsquerdo;
+        No filhoEsquerdo = null;
         No filhoDireito = node.getFilhoDireito();
         if((node.getFilhoDireito()).getFilhoEsquerdo() != null) {
             filhoEsquerdo = (node.getFilhoDireito()).getFilhoEsquerdo();
             // não precisa de comparação pq o node sempre vai ser maior que o filho esquerdo (lógica da árvore)
             filhoEsquerdo.setPai(node);
-            node.setFilhoDireito(filhoEsquerdo);
         }
+        node.setFilhoDireito(filhoEsquerdo);
         filhoDireito.setFilhoEsquerdo(node);
         filhoDireito.setPai(antigoPaidoNode);
         if(node.getPai() != null) {
@@ -313,10 +313,10 @@ public class ArvoreAVL {
 
 //        NewBalB = B.FB + 1 - Math.min(A.FB, 0);
 //        NewBalA = A.FB + 1 + Math.max(NewBalB, 0);
-        int novoFBFilhoDireito = filhoDireito.getFB() + 1 - Math.min(node.getFB(),0);
-        int novoFBPai = node.getFB() + 1 + Math.max(novoFBFilhoDireito,0);
-        node.setFB(novoFBPai);
-        filhoDireito.setFB(novoFBFilhoDireito);
+        int novoFbNode = node.getFB() + 1 - Math.min(filhoDireito.getFB(), 0);
+        int novoFbNovoPai = filhoDireito.getFB() + 1 + Math.max(novoFbNode,0);
+        node.setFB(novoFbNode);
+        filhoDireito.setFB(novoFbNovoPai);
         return node;
     }
 
