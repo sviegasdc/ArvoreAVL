@@ -272,7 +272,6 @@ public class ArvoreAVL {
                 Object temp = node.getChave();
                 node.setChave(null);
                 atualizaFBRemocao(noGuardado);
-                checaRotacao(noGuardado);
                 return temp;
             }
             // se é folha (não tem filhos)
@@ -285,7 +284,6 @@ public class ArvoreAVL {
                 node.getPai().setFilhoEsquerdo(null);
             }
             atualizaFBRemocao(noGuardado);
-            checaRotacao(noGuardado);
             return temp;
         }
         // se o nó tem apenas um filho
